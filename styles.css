@@ -1,7 +1,3 @@
-/* ========================================
-   Shopifolk - Color Palette & Foundation
-   ======================================== */
-
 :root {
     /* Background */
     --bg-cream: #F5F0EB;
@@ -49,7 +45,16 @@ body {
 .container {
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Individual node (green circle) */
+.node {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: var(--node-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
 }
