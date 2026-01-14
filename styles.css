@@ -1,0 +1,55 @@
+/* ========================================
+   Shopifolk - Color Palette & Foundation
+   ======================================== */
+
+:root {
+    /* Background */
+    --bg-cream: #F5F0EB;
+
+    /* Shopify Greens - pick one as primary */
+    --green-classic: #95BF47;
+    /* Classic Shopify green */
+    --green-modern: #5E8E3E;
+    /* Deeper, modern Shopify green */
+    --green-bright: #96BF48;
+    /* Bright variant */
+
+    /* Using classic for now - easy to swap */
+    --node-color: var(--green-classic);
+
+    /* Text */
+    --text-primary: #1A1A1A;
+    /* Names */
+    --text-secondary: #4A4A4A;
+    /* Roles, lighter info */
+
+    /* Spacing */
+    --spacing-unit: 8px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+body {
+    background-color: var(--bg-cream);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary);
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
