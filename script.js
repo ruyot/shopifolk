@@ -74,10 +74,16 @@ async function sampleLogoForNodes() {
 
 function createNodeElements(positions) {
   const container = document.querySelector('.container');
-  const logoWidth = 109.5 * CONFIG.logoScale;
-  const logoHeight = 124.5 * CONFIG.logoScale;
-  const offsetX = (window.innerWidth - logoWidth) / 2;
-  const offsetY = (window.innerHeight - logoHeight) / 2;
+
+  const minX = Math.min(...positions.map(p => p.x));
+  const maxX = Math.max(...positions.map(p => p.x));
+  const minY = Math.min(...positions.map(p => p.y));
+  const maxY = Math.max(...positions.map(p => p.y));
+
+  const logoWidth = maxX - minX;
+  const logoHeight = maxY - minY;
+  const offsetX = (window.innerWidth - logoWidth) / 2 - minX;
+  const offsetY = (window.innerHeight - logoHeight) / 2 - minY;
 
   positions.forEach((pos, index) => {
     const node = document.createElement('div');
