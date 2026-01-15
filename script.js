@@ -1,65 +1,48 @@
-// Shopifolk - Animation Script
 import { animate } from 'animejs';
 
-// Configuration
 const CONFIG = {
-  nodeSize: 3.5,          // Diameter of each node circle
-  samplingGap: 5,       // Distance between sample points
-  logoScale: 4,          // Scale up the logo for more detail
-  // Hover animation settings
-  hoverRadius: 2,      // Max distance nodes float from center
-  hoverDurationMin: 2000, // Minimum animation duration (ms)
-  hoverDurationMax: 4000, // Maximum animation duration (ms)
-  // Colors from the SVG
-  lightGreen: '#95BF47', // Main bag color
-  darkGreen: '#5E8E3E',  // Shadow/side color
+  nodeSize: 3.5,
+  samplingGap: 5,
+  logoScale: 4,
+  hoverRadius: 2,
+  hoverDurationMin: 2000,
+  hoverDurationMax: 4000,
+  mouseRadius: 35,
+  repelStrength: 25,
+  repelDuration: 150,
+  returnDuration: 400,
+  lightGreen: '#95BF47',
+  darkGreen: '#5E8E3E',
 };
 
-// Store all node elements and their positions
 let nodes = [];
-let logoPositions = []; // Original positions forming the logo
+let logoPositions = [];
+let mouseX = -1000;
+let mouseY = -1000;
 
-// Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-  console.log('Initializing Shopifolk...');
-
-  // Sample the logo to get node positions
   logoPositions = await sampleLogoForNodes();
-  console.log(`Found ${logoPositions.length} node positions`);
-
-  // Create DOM elements for each node
   createNodeElements(logoPositions);
-
-  // Start the floating/hover animation
   startHoverAnimation();
+  setupMouseRepel();
 }
 
-/**
- * Load the SVG logo, render to canvas, and sample pixel positions
- * Returns array of {x, y, color} with positions and colors for nodes
- */
 async function sampleLogoForNodes() {
   return new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
 
     img.onload = () => {
-      // Create offscreen canvas
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-
-      // Scale up for more detail
       const width = img.width * CONFIG.logoScale;
       const height = img.height * CONFIG.logoScale;
       canvas.width = width;
       canvas.height = height;
-
-      // Draw the logo
       ctx.drawImage(img, 0, 0, width, height);
 
-      // Sample pixels
       const positions = [];
       const imageData = ctx.getImageData(0, 0, width, height);
       const data = imageData.data;
@@ -72,23 +55,13 @@ async function sampleLogoForNodes() {
           const b = data[index + 2];
           const a = data[index + 3];
 
-          // Skip transparent pixels
           if (a < 128) continue;
-
-          // Skip white pixels (the S cutout) - check if it's close to white
           if (r > 240 && g > 240 && b > 240) continue;
 
-          // Determine if this is dark green (shadow) or light green (main)
-          // Dark green in SVG is #5E8E3E (R:94, G:142, B:62)
-          // Light green is #95BF47 (R:149, G:191, B:71)
           const isDarkGreen = r < 120 && g < 160;
           const color = isDarkGreen ? CONFIG.darkGreen : CONFIG.lightGreen;
 
-          positions.push({
-            x,
-            y,
-            color
-          });
+          positions.push({ x, y, color });
         }
       }
 
@@ -99,13 +72,8 @@ async function sampleLogoForNodes() {
   });
 }
 
-/**
- * Create DOM elements for each node and position them
- */
 function createNodeElements(positions) {
   const container = document.querySelector('.container');
-
-  // Calculate offset to center the logo
   const logoWidth = 109.5 * CONFIG.logoScale;
   const logoHeight = 124.5 * CONFIG.logoScale;
   const offsetX = (window.innerWidth - logoWidth) / 2;
@@ -126,34 +94,34 @@ function createNodeElements(positions) {
       element: node,
       logoX: pos.x + offsetX,
       logoY: pos.y + offsetY,
-      color: pos.color
+      currentX: pos.x + offsetX,
+      currentY: pos.y + offsetY,
+      color: pos.color,
+      isRepelled: false
     });
   });
-
-  console.log(`Created ${nodes.length} node elements`);
 }
 
-/**
- * Start subtle floating animation for all nodes
- * Each node oscillates within its hover radius with random timing
- */
 function startHoverAnimation() {
   nodes.forEach((nodeData) => {
     animateNodeHover(nodeData);
   });
 }
 
-/**
- * Animate a single node's hover/float motion
- */
 function animateNodeHover(nodeData) {
-  // Random target offset within hover radius
+  if (nodeData.isRepelled) {
+    setTimeout(() => animateNodeHover(nodeData), 100);
+    return;
+  }
+
   const angle = Math.random() * Math.PI * 2;
   const distance = Math.random() * CONFIG.hoverRadius;
   const targetX = nodeData.logoX + Math.cos(angle) * distance;
   const targetY = nodeData.logoY + Math.sin(angle) * distance;
 
-  // Random duration for organic feel
+  nodeData.currentX = targetX;
+  nodeData.currentY = targetY;
+
   const duration = CONFIG.hoverDurationMin +
     Math.random() * (CONFIG.hoverDurationMax - CONFIG.hoverDurationMin);
 
@@ -163,7 +131,67 @@ function animateNodeHover(nodeData) {
     duration: duration,
     ease: 'inOutSine',
     onComplete: () => {
-      // Continue with next random position
+      animateNodeHover(nodeData);
+    }
+  });
+}
+
+function setupMouseRepel() {
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    applyMouseRepel();
+  });
+
+  document.addEventListener('mouseleave', () => {
+    mouseX = -1000;
+    mouseY = -1000;
+    nodes.forEach(nodeData => {
+      if (nodeData.isRepelled) {
+        returnNode(nodeData);
+      }
+    });
+  });
+}
+
+function applyMouseRepel() {
+  nodes.forEach((nodeData) => {
+    const dx = nodeData.logoX - mouseX;
+    const dy = nodeData.logoY - mouseY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < CONFIG.mouseRadius) {
+      if (!nodeData.isRepelled) {
+        nodeData.isRepelled = true;
+      }
+
+      const strength = (1 - distance / CONFIG.mouseRadius) * CONFIG.repelStrength;
+      const normalX = dx / distance || 0;
+      const normalY = dy / distance || 0;
+      const repelX = nodeData.logoX + normalX * strength;
+      const repelY = nodeData.logoY + normalY * strength;
+
+      animate(nodeData.element, {
+        left: `${repelX}px`,
+        top: `${repelY}px`,
+        duration: CONFIG.repelDuration,
+        ease: 'outQuad'
+      });
+    } else if (nodeData.isRepelled) {
+      returnNode(nodeData);
+    }
+  });
+}
+
+function returnNode(nodeData) {
+  nodeData.isRepelled = false;
+
+  animate(nodeData.element, {
+    left: `${nodeData.logoX}px`,
+    top: `${nodeData.logoY}px`,
+    duration: CONFIG.returnDuration,
+    ease: 'outElastic(1, 0.5)',
+    onComplete: () => {
       animateNodeHover(nodeData);
     }
   });

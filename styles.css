@@ -1,25 +1,11 @@
 :root {
-    /* Background */
     --bg-cream: #F5F0EB;
-
-    /* Shopify Greens - pick one as primary */
     --green-classic: #95BF47;
-    /* Classic Shopify green */
     --green-modern: #5E8E3E;
-    /* Deeper, modern Shopify green */
     --green-bright: #96BF48;
-    /* Bright variant */
-
-    /* Using classic for now - easy to swap */
     --node-color: var(--green-classic);
-
-    /* Text */
     --text-primary: #1A1A1A;
-    /* Names */
     --text-secondary: #4A4A4A;
-    /* Roles, lighter info */
-
-    /* Spacing */
     --spacing-unit: 8px;
 }
 
@@ -49,7 +35,6 @@ body {
     overflow: hidden;
 }
 
-/* Individual node (green circle) */
 .node {
     position: absolute;
     width: 6px;
