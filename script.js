@@ -1,4 +1,4 @@
-import { animate } from 'animejs';
+import { animate, stagger } from 'animejs';
 
 const CONFIG = {
   nodeSize: 3.5,
@@ -13,6 +13,11 @@ const CONFIG = {
   returnDuration: 400,
   lightGreen: '#95BF47',
   darkGreen: '#5E8E3E',
+  textAnimDelay: 500,
+  textAnimDuration: 600,
+  textStaggerDelay: 150,
+  centerAdjustX: 0,
+  centerAdjustY: 0,
 };
 
 let nodes = [];
@@ -27,6 +32,7 @@ async function init() {
   createNodeElements(logoPositions);
   startHoverAnimation();
   setupMouseRepel();
+  animateTextIn();
 }
 
 async function sampleLogoForNodes() {
@@ -82,8 +88,12 @@ function createNodeElements(positions) {
 
   const logoWidth = maxX - minX;
   const logoHeight = maxY - minY;
-  const offsetX = (window.innerWidth - logoWidth) / 2 - minX;
-  const offsetY = (window.innerHeight - logoHeight) / 2 - minY;
+
+  const viewW = window.innerWidth;
+  const viewH = window.innerHeight;
+
+  const offsetX = (viewW - logoWidth) / 2 - minX + CONFIG.centerAdjustX;
+  const offsetY = (viewH - logoHeight) / 2 - minY + CONFIG.centerAdjustY;
 
   positions.forEach((pos, index) => {
     const node = document.createElement('div');
@@ -201,4 +211,19 @@ function returnNode(nodeData) {
       animateNodeHover(nodeData);
     }
   });
+}
+
+function animateTextIn() {
+  const words = Array.from(document.querySelectorAll('.word'));
+  words.sort((a, b) => parseInt(a.dataset.order) - parseInt(b.dataset.order));
+
+  setTimeout(() => {
+    animate(words, {
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: CONFIG.textAnimDuration,
+      ease: 'outExpo',
+      delay: stagger(CONFIG.textStaggerDelay)
+    });
+  }, CONFIG.textAnimDelay);
 }
