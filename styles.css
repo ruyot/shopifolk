@@ -78,12 +78,12 @@ body {
 
 .word-shit {
     bottom: 4%;
-    left: calc(50% - 12vw);
-    font-size: 9vw;
+    left: calc(50% - 21vw);
+    font-size: 10vw;
 }
 
 .word-done {
     bottom: 4%;
-    left: calc(50% + 5vw);
-    font-size: 9vw;
+    left: calc(50% + 7vw);
+    font-size: 10vw;
 }
