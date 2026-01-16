@@ -65,13 +65,13 @@ body {
 }
 
 .word-who {
-    top: 45%;
+    top: 48%;
     left: calc(0.5% + 8vw);
     font-size: 18vw;
 }
 
 .word-get {
-    top: 45%;
+    top: 48%;
     right: calc(0.5% + 11vw);
     font-size: 18vw;
 }
