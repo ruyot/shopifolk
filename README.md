@@ -1,6 +1,6 @@
 # Shopifolk
 
-A web ring for Shopify engineers - interns, full-time employees, and alumni.
+A web ring for everyone Shopify - interns, full-time employees, and alumni.
 
 ## Purpose
 
