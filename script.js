@@ -289,15 +289,16 @@ function setupScrollAnimation() {
 
     if (scrollY >= clickThreshold && !clickTriggered) {
       clickTriggered = true;
+      const corners = document.querySelectorAll('.corner');
       animate(terminalBox, {
         scale: [1, 1.02, 0.98, 1],
         duration: 300,
         ease: 'outElastic(1, 0.5)'
       });
-      terminalBox.style.boxShadow = '0 0 0 4px var(--bg-cream), 0 0 0 6px var(--green-classic)';
+      corners.forEach(corner => corner.classList.add('visible'));
       setTimeout(() => {
-        terminalBox.style.boxShadow = 'none';
-      }, 400);
+        corners.forEach(corner => corner.classList.remove('visible'));
+      }, 500);
     }
   });
 }
