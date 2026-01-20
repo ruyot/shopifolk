@@ -14,7 +14,7 @@ const CONFIG = {
   lightGreen: '#95BF47',
   darkGreen: '#5E8E3E',
   textAnimDelay: 500,
-  textAnimDuration: 600,
+  textAnimDuration: 1200,
   textStaggerDelay: 150,
   centerAdjustX: 0,
   centerAdjustY: 0,
@@ -219,7 +219,7 @@ function animateTextIn() {
 
   setTimeout(() => {
     animate(words, {
-      color: ['#D0D0D0', '#1A1A1A'],
+      color: ['#E8E8E8', '#1A1A1A'],
       duration: CONFIG.textAnimDuration,
       ease: 'outExpo',
       delay: stagger(CONFIG.textStaggerDelay)
