@@ -219,7 +219,7 @@ function animateTextIn() {
 
   setTimeout(() => {
     animate(words, {
-      color: ['#E8E8E8', '#1A1A1A'],
+      color: ['#C5E08C', '#1A1A1A'],
       duration: CONFIG.textAnimDuration,
       ease: 'outExpo',
       delay: stagger(CONFIG.textStaggerDelay)
