@@ -15,9 +15,14 @@
 
 html,
 body {
-    height: 100%;
+    height: 200vh;
     width: 100%;
-    overflow: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
 }
 
 body {
@@ -27,11 +32,11 @@ body {
 }
 
 .container {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     overflow: hidden;
 }
 
@@ -47,7 +52,7 @@ body {
     font-weight: 400;
     letter-spacing: 0.02em;
     line-height: 0.8;
-    color: #C5E08C;
+    color: #E5E5E5;
     opacity: 1;
     z-index: 10;
 }
@@ -86,4 +91,41 @@ body {
     bottom: 4%;
     left: calc(50% + 18vw);
     font-size: 12vw;
+}
+
+.terminal-box {
+    position: fixed;
+    top: 50%;
+    left: 33%;
+    transform: translate(-50%, -50%);
+    background-color: var(--bg-cream);
+    border: 2px solid var(--text-primary);
+    padding: 1.5rem 2rem;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.terminal-box.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.terminal-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.terminal-prompt {
+    color: var(--green-classic);
+}
+
+.terminal-path {
+    color: var(--text-primary);
+}
+
+.terminal-cmd {
+    color: var(--green-classic);
 }

@@ -1,4 +1,4 @@
-import { animate, stagger, splitText } from 'animejs';
+import { animate, stagger, splitText, onScroll } from 'animejs';
 
 const CONFIG = {
   nodeSize: 3.5,
@@ -15,15 +15,17 @@ const CONFIG = {
   darkGreen: '#5E8E3E',
   textAnimDelay: 500,
   textAnimDuration: 1200,
-  textStaggerDelay: 150,
+  textStaggerDelay: 250,
   centerAdjustX: 0,
   centerAdjustY: 0,
+  terminalCharDelay: 30,
 };
 
 let nodes = [];
 let logoPositions = [];
 let mouseX = -1000;
 let mouseY = -1000;
+let terminalAnimated = false;
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -33,6 +35,7 @@ async function init() {
   startHoverAnimation();
   setupMouseRepel();
   animateTextIn();
+  setupScrollAnimation();
 }
 
 async function sampleLogoForNodes() {
@@ -219,10 +222,59 @@ function animateTextIn() {
 
   setTimeout(() => {
     animate(words, {
-      color: ['#C5E08C', '#1A1A1A'],
+      color: ['#E5E5E5', '#1A1A1A'],
       duration: CONFIG.textAnimDuration,
       ease: 'outExpo',
       delay: stagger(CONFIG.textStaggerDelay)
     });
   }, CONFIG.textAnimDelay);
+}
+
+function setupScrollAnimation() {
+  let isVisible = false;
+  let hasAnimated = false;
+  const terminalBox = document.querySelector('.terminal-box');
+  const terminalText = document.querySelector('.terminal-text');
+
+  if (!terminalBox || !terminalText) return;
+
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+
+    if (scrollY > 20 && !isVisible) {
+      isVisible = true;
+      terminalBox.classList.add('visible');
+
+      animate(terminalBox, {
+        opacity: [0, 1],
+        scale: [0.95, 1],
+        duration: 300,
+        ease: 'outExpo'
+      });
+
+      if (!hasAnimated) {
+        hasAnimated = true;
+        const { chars } = splitText(terminalText, { chars: true });
+        animate(chars, {
+          opacity: [0, 1],
+          duration: 30,
+          delay: stagger(15),
+          ease: 'linear'
+        });
+      }
+    }
+
+    if (scrollY <= 20 && isVisible) {
+      isVisible = false;
+      animate(terminalBox, {
+        opacity: [1, 0],
+        scale: [1, 0.95],
+        duration: 200,
+        ease: 'inExpo',
+        onComplete: () => {
+          terminalBox.classList.remove('visible');
+        }
+      });
+    }
+  });
 }
