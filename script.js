@@ -232,49 +232,72 @@ function animateTextIn() {
 
 function setupScrollAnimation() {
   let isVisible = false;
-  let hasAnimated = false;
+  let clickTriggered = false;
   const terminalBox = document.querySelector('.terminal-box');
   const terminalText = document.querySelector('.terminal-text');
 
   if (!terminalBox || !terminalText) return;
 
+  const { chars } = splitText(terminalText, { chars: true });
+
+  chars.forEach(char => {
+    char.style.opacity = '0';
+  });
+
   window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
+    const startScroll = 60;
+    const endScroll = 150;
+    const clickThreshold = 160;
 
-    if (scrollY > 20 && !isVisible) {
+    if (scrollY > 40 && !isVisible) {
       isVisible = true;
       terminalBox.classList.add('visible');
-
       animate(terminalBox, {
         opacity: [0, 1],
         scale: [0.95, 1],
-        duration: 300,
+        duration: 400,
         ease: 'outExpo'
       });
-
-      if (!hasAnimated) {
-        hasAnimated = true;
-        const { chars } = splitText(terminalText, { chars: true });
-        animate(chars, {
-          opacity: [0, 1],
-          duration: 30,
-          delay: stagger(15),
-          ease: 'linear'
-        });
-      }
     }
 
-    if (scrollY <= 20 && isVisible) {
+    if (scrollY <= 40 && isVisible) {
       isVisible = false;
-      animate(terminalBox, {
-        opacity: [1, 0],
-        scale: [1, 0.95],
-        duration: 200,
-        ease: 'inExpo',
-        onComplete: () => {
-          terminalBox.classList.remove('visible');
-        }
+      clickTriggered = false;
+      terminalBox.classList.remove('visible');
+      terminalBox.style.opacity = '0';
+      terminalBox.style.boxShadow = 'none';
+      chars.forEach(char => {
+        char.style.opacity = '0';
       });
+    }
+
+    if (scrollY >= startScroll && scrollY <= endScroll) {
+      const progress = (scrollY - startScroll) / (endScroll - startScroll);
+      const charsToShow = Math.floor(progress * chars.length);
+
+      chars.forEach((char, index) => {
+        char.style.opacity = index < charsToShow ? '1' : '0';
+      });
+    }
+
+    if (scrollY > endScroll) {
+      chars.forEach(char => {
+        char.style.opacity = '1';
+      });
+    }
+
+    if (scrollY >= clickThreshold && !clickTriggered) {
+      clickTriggered = true;
+      animate(terminalBox, {
+        scale: [1, 1.02, 0.98, 1],
+        duration: 300,
+        ease: 'outElastic(1, 0.5)'
+      });
+      terminalBox.style.boxShadow = '0 0 0 4px var(--bg-cream), 0 0 0 6px var(--green-classic)';
+      setTimeout(() => {
+        terminalBox.style.boxShadow = 'none';
+      }, 400);
     }
   });
 }
