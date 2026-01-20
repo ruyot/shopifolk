@@ -130,6 +130,10 @@ body {
     color: var(--green-classic);
 }
 
+.terminal-percent {
+    color: var(--text-primary);
+}
+
 .corner {
     position: absolute;
     width: 12px;
