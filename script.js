@@ -1,4 +1,4 @@
-import { animate, stagger } from 'animejs';
+import { animate, stagger, splitText } from 'animejs';
 
 const CONFIG = {
   nodeSize: 3.5,
@@ -219,8 +219,7 @@ function animateTextIn() {
 
   setTimeout(() => {
     animate(words, {
-      opacity: [0, 1],
-      translateY: [20, 0],
+      color: ['#D0D0D0', '#1A1A1A'],
       duration: CONFIG.textAnimDuration,
       ease: 'outExpo',
       delay: stagger(CONFIG.textStaggerDelay)
