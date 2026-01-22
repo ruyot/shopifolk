@@ -329,7 +329,7 @@ function setupScrollAnimation() {
         if (window.scrollY >= exitThreshold && !hasExited) {
           triggerExitAnimation();
         }
-      }, 1000);
+      }, 500);
     }
 
     if (clickTriggered && canExit && scrollY >= exitThreshold && !hasExited) {
