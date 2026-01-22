@@ -244,13 +244,18 @@ function setupScrollAnimation() {
     char.style.opacity = '0';
   });
 
+  let hasExited = false;
+  let canExit = false;
+  let exitTimeout;
+
   window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
     const startScroll = 60;
     const endScroll = 150;
     const clickThreshold = 160;
+    const exitThreshold = 600;
 
-    if (scrollY > 40 && !isVisible) {
+    if (scrollY > 40 && !isVisible && !hasExited) {
       isVisible = true;
       terminalBox.classList.add('visible');
       animate(terminalBox, {
@@ -264,15 +269,31 @@ function setupScrollAnimation() {
     if (scrollY <= 40 && isVisible) {
       isVisible = false;
       clickTriggered = false;
+      hasExited = false;
+      canExit = false;
+      if (exitTimeout) clearTimeout(exitTimeout);
+
       terminalBox.classList.remove('visible');
       terminalBox.style.opacity = '0';
+      terminalBox.style.transform = '';
       terminalBox.style.boxShadow = 'none';
       chars.forEach(char => {
         char.style.opacity = '0';
       });
+
+      const wordShit = document.querySelector('.word-shit');
+      const wordDone = document.querySelector('.word-done');
+      if (wordShit) {
+        wordShit.style.transform = '';
+        wordShit.style.opacity = '';
+      }
+      if (wordDone) {
+        wordDone.style.transform = '';
+        wordDone.style.opacity = '';
+      }
     }
 
-    if (scrollY >= startScroll && scrollY <= endScroll) {
+    if (!hasExited && scrollY >= startScroll && scrollY <= endScroll) {
       const progress = (scrollY - startScroll) / (endScroll - startScroll);
       const charsToShow = Math.floor(progress * chars.length);
 
@@ -281,13 +302,13 @@ function setupScrollAnimation() {
       });
     }
 
-    if (scrollY > endScroll) {
+    if (!hasExited && scrollY > endScroll) {
       chars.forEach(char => {
         char.style.opacity = '1';
       });
     }
 
-    if (scrollY >= clickThreshold && !clickTriggered) {
+    if (!hasExited && scrollY >= clickThreshold && !clickTriggered) {
       clickTriggered = true;
       const corners = document.querySelectorAll('.corner');
       animate(terminalBox, {
@@ -299,6 +320,44 @@ function setupScrollAnimation() {
       setTimeout(() => {
         corners.forEach(corner => corner.classList.remove('visible'));
       }, 500);
+
+      // Enforce waiting for animation to finish before allowing exit
+      if (exitTimeout) clearTimeout(exitTimeout);
+      exitTimeout = setTimeout(() => {
+        canExit = true;
+        // Check if user already scrolled past threshold while waiting
+        if (window.scrollY >= exitThreshold && !hasExited) {
+          triggerExitAnimation();
+        }
+      }, 1000);
+    }
+
+    if (clickTriggered && canExit && scrollY >= exitThreshold && !hasExited) {
+      triggerExitAnimation();
     }
   });
+
+  function triggerExitAnimation() {
+    hasExited = true;
+
+    const wordShit = document.querySelector('.word-shit');
+    const wordDone = document.querySelector('.word-done');
+
+    animate([wordShit, wordDone], {
+      translateY: ['0%', '150%'],
+      opacity: [1, 0],
+      duration: 400,
+      ease: 'inExpo'
+    });
+
+    animate(terminalBox, {
+      opacity: [1, 0],
+      translateY: [0, 20],
+      duration: 400,
+      ease: 'inExpo',
+      onComplete: () => {
+        terminalBox.classList.remove('visible');
+      }
+    });
+  }
 }
