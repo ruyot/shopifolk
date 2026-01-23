@@ -245,6 +245,7 @@ function setupScrollAnimation() {
   });
 
   let hasExited = false;
+  let hasExited2 = false;
   let canExit = false;
   let exitTimeout;
 
@@ -270,6 +271,7 @@ function setupScrollAnimation() {
       isVisible = false;
       clickTriggered = false;
       hasExited = false;
+      hasExited2 = false;
       canExit = false;
       if (exitTimeout) clearTimeout(exitTimeout);
 
@@ -283,6 +285,8 @@ function setupScrollAnimation() {
 
       const wordShit = document.querySelector('.word-shit');
       const wordDone = document.querySelector('.word-done');
+      const wordWho = document.querySelector('.word-who');
+      const wordGet = document.querySelector('.word-get');
       if (wordShit) {
         wordShit.style.transform = '';
         wordShit.style.opacity = '';
@@ -290,6 +294,14 @@ function setupScrollAnimation() {
       if (wordDone) {
         wordDone.style.transform = '';
         wordDone.style.opacity = '';
+      }
+      if (wordWho) {
+        wordWho.style.transform = '';
+        wordWho.style.opacity = '';
+      }
+      if (wordGet) {
+        wordGet.style.transform = '';
+        wordGet.style.opacity = '';
       }
     }
 
@@ -334,6 +346,34 @@ function setupScrollAnimation() {
 
     if (clickTriggered && canExit && scrollY >= exitThreshold && !hasExited) {
       triggerExitAnimation();
+    }
+
+    const exitThreshold2 = 750;
+
+    if (hasExited && scrollY >= exitThreshold2 && !hasExited2) {
+      hasExited2 = true;
+      const wordWho = document.querySelector('.word-who');
+      const wordGet = document.querySelector('.word-get');
+
+      animate([wordWho, wordGet], {
+        translateY: ['0%', '150%'],
+        opacity: [1, 0],
+        duration: 400,
+        ease: 'inExpo'
+      });
+    }
+
+    if (hasExited2 && scrollY < exitThreshold2 - 100) {
+      hasExited2 = false;
+      const wordWho = document.querySelector('.word-who');
+      const wordGet = document.querySelector('.word-get');
+
+      animate([wordWho, wordGet], {
+        translateY: ['150%', '0%'],
+        opacity: [0, 1],
+        duration: 400,
+        ease: 'outExpo'
+      });
     }
 
     if (hasExited && scrollY < exitThreshold - 100) {
