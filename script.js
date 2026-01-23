@@ -335,6 +335,28 @@ function setupScrollAnimation() {
     if (clickTriggered && canExit && scrollY >= exitThreshold && !hasExited) {
       triggerExitAnimation();
     }
+
+    if (hasExited && scrollY < exitThreshold - 100) {
+      hasExited = false;
+
+      const wordShit = document.querySelector('.word-shit');
+      const wordDone = document.querySelector('.word-done');
+
+      animate([wordShit, wordDone], {
+        translateY: ['150%', '0%'],
+        opacity: [0, 1],
+        duration: 400,
+        ease: 'outExpo'
+      });
+
+      terminalBox.classList.add('visible');
+      animate(terminalBox, {
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 400,
+        ease: 'outExpo'
+      });
+    }
   });
 
   function triggerExitAnimation() {
