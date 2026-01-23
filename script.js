@@ -246,6 +246,7 @@ function setupScrollAnimation() {
 
   let hasExited = false;
   let hasExited2 = false;
+  let hasExited3 = false;
   let canExit = false;
   let exitTimeout;
 
@@ -369,6 +370,34 @@ function setupScrollAnimation() {
       const wordGet = document.querySelector('.word-get');
 
       animate([wordWho, wordGet], {
+        translateY: ['150%', '0%'],
+        opacity: [0, 1],
+        duration: 400,
+        ease: 'outExpo'
+      });
+    }
+
+    const exitThreshold3 = 900;
+
+    if (hasExited2 && scrollY >= exitThreshold3 && !hasExited3) {
+      hasExited3 = true;
+      const wordThe = document.querySelector('.word-the');
+      const wordPpl = document.querySelector('.word-ppl');
+
+      animate([wordThe, wordPpl], {
+        translateY: ['0%', '150%'],
+        opacity: [1, 0],
+        duration: 400,
+        ease: 'inExpo'
+      });
+    }
+
+    if (hasExited3 && scrollY < exitThreshold3 - 100) {
+      hasExited3 = false;
+      const wordThe = document.querySelector('.word-the');
+      const wordPpl = document.querySelector('.word-ppl');
+
+      animate([wordThe, wordPpl], {
         translateY: ['150%', '0%'],
         opacity: [0, 1],
         duration: 400,
