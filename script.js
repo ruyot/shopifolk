@@ -26,6 +26,7 @@ let logoPositions = [];
 let mouseX = -1000;
 let mouseY = -1000;
 let terminalAnimated = false;
+let mouseRepelDisabled = false;
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -174,6 +175,8 @@ function setupMouseRepel() {
 }
 
 function applyMouseRepel() {
+  if (mouseRepelDisabled) return;
+
   nodes.forEach((nodeData) => {
     const dx = nodeData.logoX - mouseX;
     const dy = nodeData.logoY - mouseY;
@@ -402,6 +405,7 @@ function setupScrollAnimation() {
 
     if (hasExited2 && scrollY >= exitThreshold3 && !hasExited3) {
       hasExited3 = true;
+      mouseRepelDisabled = true;
       const wordThe = document.querySelector('.word-the');
       const wordPpl = document.querySelector('.word-ppl');
 
@@ -415,6 +419,7 @@ function setupScrollAnimation() {
 
     if (hasExited3 && scrollY < exitThreshold3 - 100) {
       hasExited3 = false;
+      mouseRepelDisabled = false;
       const wordThe = document.querySelector('.word-the');
       const wordPpl = document.querySelector('.word-ppl');
 
