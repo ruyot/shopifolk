@@ -249,6 +249,7 @@ function setupScrollAnimation() {
   let hasExited = false;
   let hasExited2 = false;
   let hasExited3 = false;
+  let hasNodesExited = false;
   let canExit = false;
   let exitTimeout;
 
@@ -276,8 +277,15 @@ function setupScrollAnimation() {
       hasExited = false;
       hasExited2 = false;
       hasExited3 = false;
+      hasNodesExited = false;
       canExit = false;
       if (exitTimeout) clearTimeout(exitTimeout);
+
+      nodes.forEach(node => {
+        node.element.style.left = `${node.logoX}px`;
+        node.element.style.top = `${node.logoY}px`;
+        node.element.style.backgroundColor = node.color;
+      });
 
       terminalBox.classList.remove('visible');
       terminalBox.style.opacity = '0';
@@ -437,6 +445,46 @@ function setupScrollAnimation() {
         translateY: [20, 0],
         duration: 400,
         ease: 'outExpo'
+      });
+    }
+
+    const nodesExitThreshold = 200; // TEMP: lowered for testing
+    const targetX = window.innerWidth * 0.75;
+    const targetY = window.innerHeight / 2;
+
+    // DEBUG
+    if (scrollY > 150 && scrollY < 250) {
+      console.log('DEBUG - scrollY:', scrollY, 'hasExited3:', hasExited3, 'hasNodesExited:', hasNodesExited, 'nodes.length:', nodes.length);
+    }
+
+    if (hasExited3 && scrollY >= nodesExitThreshold && !hasNodesExited) {
+      hasNodesExited = true;
+      console.log('TRIGGERING NODE EXIT - nodes:', nodes.length);
+
+      nodes.forEach((node, i) => {
+        animate(node.element, {
+          left: [`${node.logoX}px`, `${targetX}px`],
+          top: [`${node.logoY}px`, `${targetY}px`],
+          backgroundColor: [node.color, CONFIG.lightGreen],
+          duration: 600,
+          delay: i * 2,
+          ease: 'inOutQuad'
+        });
+      });
+    }
+
+    if (hasNodesExited && scrollY < nodesExitThreshold - 100) {
+      hasNodesExited = false;
+
+      nodes.forEach((node, i) => {
+        animate(node.element, {
+          left: [`${targetX}px`, `${node.logoX}px`],
+          top: [`${targetY}px`, `${node.logoY}px`],
+          backgroundColor: [CONFIG.lightGreen, node.color],
+          duration: 600,
+          delay: i * 2,
+          ease: 'outQuad'
+        });
       });
     }
   });
