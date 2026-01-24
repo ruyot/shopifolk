@@ -231,6 +231,8 @@ function animateTextIn() {
 }
 
 function setupScrollAnimation() {
+  window.scrollTo(0, 0);
+
   let isVisible = false;
   let clickTriggered = false;
   const terminalBox = document.querySelector('.terminal-box');
@@ -273,6 +275,7 @@ function setupScrollAnimation() {
       clickTriggered = false;
       hasExited = false;
       hasExited2 = false;
+      hasExited3 = false;
       canExit = false;
       if (exitTimeout) clearTimeout(exitTimeout);
 
@@ -288,6 +291,8 @@ function setupScrollAnimation() {
       const wordDone = document.querySelector('.word-done');
       const wordWho = document.querySelector('.word-who');
       const wordGet = document.querySelector('.word-get');
+      const wordThe = document.querySelector('.word-the');
+      const wordPpl = document.querySelector('.word-ppl');
       if (wordShit) {
         wordShit.style.transform = '';
         wordShit.style.opacity = '';
@@ -303,6 +308,14 @@ function setupScrollAnimation() {
       if (wordGet) {
         wordGet.style.transform = '';
         wordGet.style.opacity = '';
+      }
+      if (wordThe) {
+        wordThe.style.transform = '';
+        wordThe.style.opacity = '';
+      }
+      if (wordPpl) {
+        wordPpl.style.transform = '';
+        wordPpl.style.opacity = '';
       }
     }
 
