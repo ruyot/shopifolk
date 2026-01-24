@@ -452,16 +452,15 @@ function setupScrollAnimation() {
     const targetX = window.innerWidth * 0.75;
     const targetY = window.innerHeight / 2;
 
-    // DEBUG
-    if (scrollY > 150 && scrollY < 250) {
-      console.log('DEBUG - scrollY:', scrollY, 'hasExited3:', hasExited3, 'hasNodesExited:', hasNodesExited, 'nodes.length:', nodes.length);
-    }
-
     if (hasExited3 && scrollY >= nodesExitThreshold && !hasNodesExited) {
       hasNodesExited = true;
-      console.log('TRIGGERING NODE EXIT - nodes:', nodes.length);
 
-      nodes.forEach((node, i) => {
+      const sortedNodes = [...nodes].sort((a, b) => {
+        if (b.logoY !== a.logoY) return b.logoY - a.logoY;
+        return a.logoX - b.logoX;
+      });
+
+      sortedNodes.forEach((node, i) => {
         animate(node.element, {
           left: [`${node.logoX}px`, `${targetX}px`],
           top: [`${node.logoY}px`, `${targetY}px`],
@@ -476,7 +475,12 @@ function setupScrollAnimation() {
     if (hasNodesExited && scrollY < nodesExitThreshold - 100) {
       hasNodesExited = false;
 
-      nodes.forEach((node, i) => {
+      const sortedNodes = [...nodes].sort((a, b) => {
+        if (a.logoY !== b.logoY) return a.logoY - b.logoY;
+        return b.logoX - a.logoX;
+      });
+
+      sortedNodes.forEach((node, i) => {
         animate(node.element, {
           left: [`${targetX}px`, `${node.logoX}px`],
           top: [`${targetY}px`, `${node.logoY}px`],
