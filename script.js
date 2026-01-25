@@ -28,6 +28,8 @@ let mouseX = -1000;
 let mouseY = -1000;
 let terminalAnimated = false;
 let mouseRepelDisabled = false;
+let globeInstance = null;
+let globePoints = [];
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -45,24 +47,27 @@ function initGlobe() {
   setTimeout(() => {
     const container = document.getElementById('globe-container');
 
-    const globe = new Globe(container)
+    globeInstance = new Globe(container)
       .backgroundColor('rgba(0,0,0,0)')
       .showGlobe(false)
       .showAtmosphere(false)
       .width(900)
       .height(900);
 
-    globe.controls().autoRotate = true;
-    globe.controls().autoRotateSpeed = 1.5;
-    globe.controls().enableZoom = false;
-    globe.controls().enablePan = false;
-    globe.controls().enableRotate = false;
+    // Start with rotation paused - will resume after nodes animate in
+    globeInstance.controls().autoRotate = false;
+    globeInstance.controls().autoRotateSpeed = 1.5;
+    globeInstance.controls().enableZoom = false;
+    globeInstance.controls().enablePan = false;
+    globeInstance.controls().enableRotate = false;
 
     fetch('/landPoints.json')
       .then(res => res.json())
       .then(landPoints => {
-        globe
-          .pointsData(landPoints)
+        globePoints = landPoints;
+        // Initially hide globe points - DOM nodes will animate in first
+        globeInstance
+          .pointsData([]) // Start empty
           .pointLat('lat')
           .pointLng('lng')
           .pointColor(() => '#95BF47')
@@ -487,8 +492,6 @@ function setupScrollAnimation() {
     }
 
     const nodesExitThreshold = 200; // TEMP: lowered for testing
-    const targetX = window.innerWidth * 0.75;
-    const targetY = window.innerHeight / 2;
 
     if (hasExited3 && scrollY >= nodesExitThreshold && !hasNodesExited) {
       hasNodesExited = true;
@@ -500,21 +503,59 @@ function setupScrollAnimation() {
 
       const globeContainer = document.getElementById('globe-container');
 
+      // Show globe container (but empty - no points yet)
+      globeContainer.style.opacity = '1';
+
+      // Get globe container position for offset
+      const globeRect = globeContainer.getBoundingClientRect();
+
       sortedNodes.forEach((node, i) => {
+        // Map each node to a globe point (distribute across all globe points)
+        const pointIndex = Math.floor((i / sortedNodes.length) * globePoints.length);
+        const targetPoint = globePoints[pointIndex] || globePoints[0];
+
+        // Get screen coordinates for this lat/lng
+        let targetX = globeRect.left + globeRect.width / 2;
+        let targetY = globeRect.top + globeRect.height / 2;
+
+        if (globeInstance && targetPoint) {
+          const coords = globeInstance.getScreenCoords(targetPoint.lat, targetPoint.lng, 0.001);
+          if (coords) {
+            targetX = coords.x + globeRect.left;
+            targetY = coords.y + globeRect.top;
+          }
+        }
+
         const isLast = i === sortedNodes.length - 1;
+
+        // Fast animation - node stays visible at target
         animate(node.element, {
           left: [`${node.logoX}px`, `${targetX}px`],
           top: [`${node.logoY}px`, `${targetY}px`],
           backgroundColor: [node.color, CONFIG.lightGreen],
-          duration: 600,
-          delay: i * 2,
-          ease: 'inOutQuad',
+          duration: 200,
+          delay: i * 1, // Very fast stagger
+          ease: 'outQuad',
           onComplete: isLast ? () => {
-            animate(globeContainer, {
-              opacity: [0, 1],
-              duration: 500,
-              ease: 'outQuad'
-            });
+            // After all nodes arrive, handoff to globe.gl
+            setTimeout(() => {
+              // Show globe.gl points
+              globeInstance.pointsData(globePoints);
+
+              // Fade out DOM nodes
+              nodes.forEach(n => {
+                animate(n.element, {
+                  opacity: [1, 0],
+                  duration: 300,
+                  ease: 'outQuad'
+                });
+              });
+
+              // Start rotation
+              setTimeout(() => {
+                globeInstance.controls().autoRotate = true;
+              }, 300);
+            }, 100);
           } : undefined
         });
       });
@@ -530,19 +571,36 @@ function setupScrollAnimation() {
         ease: 'inQuad'
       });
 
+      // Stop rotation during reverse
+      if (globeInstance) {
+        globeInstance.controls().autoRotate = false;
+      }
+
       const sortedNodes = [...nodes].sort((a, b) => {
         if (a.logoY !== b.logoY) return a.logoY - b.logoY;
         return b.logoX - a.logoX;
       });
 
+      // Get globe center for starting position
+      const globeRect = globeContainer.getBoundingClientRect();
+      const startX = globeRect.left + globeRect.width / 2;
+      const startY = globeRect.top + globeRect.height / 2;
+
       sortedNodes.forEach((node, i) => {
+        const isLast = i === sortedNodes.length - 1;
         animate(node.element, {
-          left: [`${targetX}px`, `${node.logoX}px`],
-          top: [`${targetY}px`, `${node.logoY}px`],
+          left: [`${startX}px`, `${node.logoX}px`],
+          top: [`${startY}px`, `${node.logoY}px`],
           backgroundColor: [CONFIG.lightGreen, node.color],
-          duration: 600,
-          delay: i * 2,
-          ease: 'outQuad'
+          opacity: [0, 1],
+          duration: 400,
+          delay: i * 3,
+          ease: 'outQuad',
+          onComplete: isLast ? () => {
+            if (globeInstance) {
+              globeInstance.controls().autoRotate = true;
+            }
+          } : undefined
         });
       });
     }
