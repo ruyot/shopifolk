@@ -42,36 +42,67 @@ async function init() {
 }
 
 function initGlobe() {
-  const container = document.getElementById('globe-container');
+  // Defer globe initialization to not block main thread
+  setTimeout(() => {
+    const container = document.getElementById('globe-container');
 
-  const globe = new Globe(container)
-    .backgroundColor('rgba(0,0,0,0)')
-    .showGlobe(false)
-    .showAtmosphere(false)
-    .width(700)
-    .height(700);
+    const globe = new Globe(container)
+      .backgroundColor('rgba(0,0,0,0)')
+      .showGlobe(false)
+      .showAtmosphere(false)
+      .width(700)
+      .height(700);
 
-  fetch('https://cdn.jsdelivr.net/npm/world-atlas/land-110m.json')
-    .then(res => res.json())
-    .then(landTopo => {
-      import('https://esm.sh/topojson-client').then(topojson => {
-        import('https://esm.sh/three').then(THREE => {
-          globe
-            .polygonsData(topojson.feature(landTopo, landTopo.objects.land).features)
-            .polygonCapMaterial(new THREE.MeshLambertMaterial({
-              color: 0x95BF47,
-              side: THREE.DoubleSide
-            }))
-            .polygonSideColor(() => 'rgba(0,0,0,0)');
+    globe.controls().autoRotate = true;
+    globe.controls().autoRotateSpeed = 1.5;
+    globe.controls().enableZoom = false;
+    globe.controls().enablePan = false;
+    globe.controls().enableRotate = false;
+
+    // Generate points for land areas
+    fetch('https://cdn.jsdelivr.net/npm/world-atlas/land-110m.json')
+      .then(res => res.json())
+      .then(landTopo => {
+        import('https://esm.sh/topojson-client').then(topojson => {
+          import('https://esm.sh/d3-geo').then(d3Geo => {
+            const land = topojson.feature(landTopo, landTopo.objects.land);
+            const landPoints = [];
+
+            // Process points in chunks to avoid blocking
+            const step = 1.5; // Slightly larger step for performance
+            let lat = -90;
+
+            function processChunk() {
+              const chunkEnd = Math.min(lat + 20, 91);
+
+              for (; lat < chunkEnd; lat += step) {
+                for (let lng = -180; lng <= 180; lng += step) {
+                  const point = [lng, lat];
+                  if (land.features.some(f => d3Geo.geoContains(f, point))) {
+                    landPoints.push({ lat, lng });
+                  }
+                }
+              }
+
+              if (lat < 91) {
+                requestAnimationFrame(processChunk);
+              } else {
+                // All points processed, update globe
+                globe
+                  .pointsData(landPoints)
+                  .pointLat('lat')
+                  .pointLng('lng')
+                  .pointColor(() => '#95BF47')
+                  .pointAltitude(0.001)
+                  .pointRadius(0.3);
+              }
+            }
+
+            processChunk();
+          });
         });
       });
-    });
-
-  globe.controls().autoRotate = true;
-  globe.controls().autoRotateSpeed = 1.5;
-  globe.controls().enableZoom = false;
-  globe.controls().enablePan = false;
-  globe.controls().enableRotate = false;
+  }, 100);
 }
 
 async function sampleLogoForNodes() {
