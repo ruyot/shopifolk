@@ -175,10 +175,10 @@ body {
 #globe-container {
     position: fixed;
     top: 50%;
-    right: 10%;
+    right: 3%;
     transform: translateY(-50%);
-    width: 500px;
-    height: 500px;
+    width: 700px;
+    height: 700px;
     opacity: 0;
     pointer-events: none;
 }

@@ -48,8 +48,8 @@ function initGlobe() {
     .backgroundColor('rgba(0,0,0,0)')
     .showGlobe(false)
     .showAtmosphere(false)
-    .width(500)
-    .height(500);
+    .width(700)
+    .height(700);
 
   fetch('https://cdn.jsdelivr.net/npm/world-atlas/land-110m.json')
     .then(res => res.json())
@@ -67,14 +67,12 @@ function initGlobe() {
       });
     });
 
-  // Auto-rotate
   globe.controls().autoRotate = true;
   globe.controls().autoRotateSpeed = 1.5;
   globe.controls().enableZoom = false;
   globe.controls().enablePan = false;
   globe.controls().enableRotate = false;
 
-  // Make globe visible for testing
   container.style.opacity = '1';
 }
 
