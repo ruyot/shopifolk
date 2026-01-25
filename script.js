@@ -1,4 +1,5 @@
 import { animate, stagger, splitText, onScroll } from 'animejs';
+import Globe from 'globe.gl';
 
 const CONFIG = {
   nodeSize: 3.5,
@@ -37,6 +38,44 @@ async function init() {
   setupMouseRepel();
   animateTextIn();
   setupScrollAnimation();
+  initGlobe();
+}
+
+function initGlobe() {
+  const container = document.getElementById('globe-container');
+
+  const globe = new Globe(container)
+    .backgroundColor('rgba(0,0,0,0)')
+    .showGlobe(false)
+    .showAtmosphere(false)
+    .width(500)
+    .height(500);
+
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas/land-110m.json')
+    .then(res => res.json())
+    .then(landTopo => {
+      import('https://esm.sh/topojson-client').then(topojson => {
+        import('https://esm.sh/three').then(THREE => {
+          globe
+            .polygonsData(topojson.feature(landTopo, landTopo.objects.land).features)
+            .polygonCapMaterial(new THREE.MeshLambertMaterial({
+              color: 0x95BF47,
+              side: THREE.DoubleSide
+            }))
+            .polygonSideColor(() => 'rgba(0,0,0,0)');
+        });
+      });
+    });
+
+  // Auto-rotate
+  globe.controls().autoRotate = true;
+  globe.controls().autoRotateSpeed = 1.5;
+  globe.controls().enableZoom = false;
+  globe.controls().enablePan = false;
+  globe.controls().enableRotate = false;
+
+  // Make globe visible for testing
+  container.style.opacity = '1';
 }
 
 async function sampleLogoForNodes() {

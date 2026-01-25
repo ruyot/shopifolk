@@ -171,3 +171,14 @@ body {
 .corner.visible {
     opacity: 1;
 }
+
+#globe-container {
+    position: fixed;
+    top: 50%;
+    right: 10%;
+    transform: translateY(-50%);
+    width: 500px;
+    height: 500px;
+    opacity: 0;
+    pointer-events: none;
+}
