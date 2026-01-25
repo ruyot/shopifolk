@@ -42,7 +42,6 @@ async function init() {
 }
 
 function initGlobe() {
-  // Defer globe initialization to not block main thread
   setTimeout(() => {
     const container = document.getElementById('globe-container');
 
@@ -59,48 +58,17 @@ function initGlobe() {
     globe.controls().enablePan = false;
     globe.controls().enableRotate = false;
 
-    // Generate points for land areas
-    fetch('https://cdn.jsdelivr.net/npm/world-atlas/land-110m.json')
+    // Load pre-computed land points
+    fetch('/landPoints.json')
       .then(res => res.json())
-      .then(landTopo => {
-        import('https://esm.sh/topojson-client').then(topojson => {
-          import('https://esm.sh/d3-geo').then(d3Geo => {
-            const land = topojson.feature(landTopo, landTopo.objects.land);
-            const landPoints = [];
-
-            // Process points in chunks to avoid blocking
-            const step = 1.5; // Slightly larger step for performance
-            let lat = -90;
-
-            function processChunk() {
-              const chunkEnd = Math.min(lat + 20, 91);
-
-              for (; lat < chunkEnd; lat += step) {
-                for (let lng = -180; lng <= 180; lng += step) {
-                  const point = [lng, lat];
-                  if (land.features.some(f => d3Geo.geoContains(f, point))) {
-                    landPoints.push({ lat, lng });
-                  }
-                }
-              }
-
-              if (lat < 91) {
-                requestAnimationFrame(processChunk);
-              } else {
-                // All points processed, update globe
-                globe
-                  .pointsData(landPoints)
-                  .pointLat('lat')
-                  .pointLng('lng')
-                  .pointColor(() => '#95BF47')
-                  .pointAltitude(0.001)
-                  .pointRadius(0.3);
-              }
-            }
-
-            processChunk();
-          });
-        });
+      .then(landPoints => {
+        globe
+          .pointsData(landPoints)
+          .pointLat('lat')
+          .pointLng('lng')
+          .pointColor(() => '#95BF47')
+          .pointAltitude(0.001)
+          .pointRadius(0.4);
       });
   }, 100);
 }
