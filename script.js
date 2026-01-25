@@ -72,8 +72,6 @@ function initGlobe() {
   globe.controls().enableZoom = false;
   globe.controls().enablePan = false;
   globe.controls().enableRotate = false;
-
-  container.style.opacity = '1';
 }
 
 async function sampleLogoForNodes() {
@@ -502,20 +500,37 @@ function setupScrollAnimation() {
         return a.logoX - b.logoX;
       });
 
+      const globeContainer = document.getElementById('globe-container');
+
       sortedNodes.forEach((node, i) => {
+        const isLast = i === sortedNodes.length - 1;
         animate(node.element, {
           left: [`${node.logoX}px`, `${targetX}px`],
           top: [`${node.logoY}px`, `${targetY}px`],
           backgroundColor: [node.color, CONFIG.lightGreen],
           duration: 600,
           delay: i * 2,
-          ease: 'inOutQuad'
+          ease: 'inOutQuad',
+          onComplete: isLast ? () => {
+            animate(globeContainer, {
+              opacity: [0, 1],
+              duration: 500,
+              ease: 'outQuad'
+            });
+          } : undefined
         });
       });
     }
 
     if (hasNodesExited && scrollY < nodesExitThreshold - 100) {
       hasNodesExited = false;
+
+      const globeContainer = document.getElementById('globe-container');
+      animate(globeContainer, {
+        opacity: [1, 0],
+        duration: 300,
+        ease: 'inQuad'
+      });
 
       const sortedNodes = [...nodes].sort((a, b) => {
         if (a.logoY !== b.logoY) return a.logoY - b.logoY;
