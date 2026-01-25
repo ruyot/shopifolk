@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/ruyot/shopifolk#readme",
   "dependencies": {
-    "animejs": "^4.2.2"
+    "animejs": "^4.2.2",
+    "globe.gl": "^2.45.0"
   },
   "devDependencies": {
     "vite": "^7.3.1"
