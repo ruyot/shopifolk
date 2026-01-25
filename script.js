@@ -565,15 +565,12 @@ function setupScrollAnimation() {
       hasNodesExited = false;
 
       const globeContainer = document.getElementById('globe-container');
-      animate(globeContainer, {
-        opacity: [1, 0],
-        duration: 300,
-        ease: 'inQuad'
-      });
 
-      // Stop rotation during reverse
+      // Stop rotation immediately
       if (globeInstance) {
         globeInstance.controls().autoRotate = false;
+        // Hide globe points
+        globeInstance.pointsData([]);
       }
 
       const sortedNodes = [...nodes].sort((a, b) => {
@@ -581,25 +578,41 @@ function setupScrollAnimation() {
         return b.logoX - a.logoX;
       });
 
-      // Get globe center for starting position
+      // Get globe container position for starting positions
       const globeRect = globeContainer.getBoundingClientRect();
-      const startX = globeRect.left + globeRect.width / 2;
-      const startY = globeRect.top + globeRect.height / 2;
 
       sortedNodes.forEach((node, i) => {
+        // Get the node's globe position (same mapping as forward)
+        const pointIndex = Math.floor((i / sortedNodes.length) * globePoints.length);
+        const targetPoint = globePoints[pointIndex] || globePoints[0];
+
+        let startX = globeRect.left + globeRect.width / 2;
+        let startY = globeRect.top + globeRect.height / 2;
+
+        if (globeInstance && targetPoint) {
+          const coords = globeInstance.getScreenCoords(targetPoint.lat, targetPoint.lng, 0.001);
+          if (coords) {
+            startX = coords.x + globeRect.left;
+            startY = coords.y + globeRect.top;
+          }
+        }
+
+        // Position node at globe point and make visible
+        node.element.style.left = `${startX}px`;
+        node.element.style.top = `${startY}px`;
+        node.element.style.opacity = '1';
+
         const isLast = i === sortedNodes.length - 1;
         animate(node.element, {
           left: [`${startX}px`, `${node.logoX}px`],
           top: [`${startY}px`, `${node.logoY}px`],
           backgroundColor: [CONFIG.lightGreen, node.color],
-          opacity: [0, 1],
-          duration: 400,
-          delay: i * 3,
+          duration: 200,
+          delay: i * 1, // Fast stagger matching forward
           ease: 'outQuad',
           onComplete: isLast ? () => {
-            if (globeInstance) {
-              globeInstance.controls().autoRotate = true;
-            }
+            // Hide globe container after all nodes return
+            globeContainer.style.opacity = '0';
           } : undefined
         });
       });
