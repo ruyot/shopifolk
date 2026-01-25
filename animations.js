@@ -1,4 +1,3 @@
-// Scroll and text animations
 import { animate, stagger, splitText } from 'animejs';
 import { CONFIG, state } from './config.js';
 
@@ -314,50 +313,76 @@ export function setupScrollAnimation() {
 
             const globeContainer = document.getElementById('globe-container');
 
+            // Stop rotation
             if (state.globeInstance) {
                 state.globeInstance.controls().autoRotate = false;
-                state.globeInstance.pointsData([]);
             }
 
-            const sortedNodes = [...state.nodes].sort((a, b) => {
-                if (a.logoY !== b.logoY) return a.logoY - b.logoY;
-                return b.logoX - a.logoX;
+            // Fade out globe.gl version
+            animate(globeContainer, {
+                opacity: [1, 0],
+                duration: 200,
+                ease: 'outQuad'
             });
 
-            const globeRect = globeContainer.getBoundingClientRect();
+            // Wait 500ms (same as forward), then fade in with node version
+            setTimeout(() => {
+                // Hide globe.gl points
+                state.globeInstance.pointsData([]);
 
-            sortedNodes.forEach((node, i) => {
-                const pointIndex = Math.floor((i / sortedNodes.length) * state.globePoints.length);
-                const targetPoint = state.globePoints[pointIndex] || state.globePoints[0];
-
-                let startX = globeRect.left + globeRect.width / 2;
-                let startY = globeRect.top + globeRect.height / 2;
-
-                if (state.globeInstance && targetPoint) {
-                    const coords = state.globeInstance.getScreenCoords(targetPoint.lat, targetPoint.lng, 0.001);
-                    if (coords) {
-                        startX = coords.x + globeRect.left;
-                        startY = coords.y + globeRect.top;
-                    }
-                }
-
-                node.element.style.left = `${startX}px`;
-                node.element.style.top = `${startY}px`;
-                node.element.style.opacity = '1';
-
-                const isLast = i === sortedNodes.length - 1;
-                animate(node.element, {
-                    left: [`${startX}px`, `${node.logoX}px`],
-                    top: [`${startY}px`, `${node.logoY}px`],
-                    backgroundColor: [CONFIG.lightGreen, node.color],
-                    duration: 200,
-                    delay: i * 1,
-                    ease: 'outQuad',
-                    onComplete: isLast ? () => {
-                        globeContainer.style.opacity = '0';
-                    } : undefined
+                const sortedNodes = [...state.nodes].sort((a, b) => {
+                    if (a.logoY !== b.logoY) return a.logoY - b.logoY;
+                    return b.logoX - a.logoX;
                 });
-            });
+
+                const globeRect = globeContainer.getBoundingClientRect();
+
+                // Position nodes at globe positions (invisible for now)
+                sortedNodes.forEach((node, i) => {
+                    const pointIndex = Math.floor((i / sortedNodes.length) * state.globePoints.length);
+                    const targetPoint = state.globePoints[pointIndex] || state.globePoints[0];
+
+                    let startX = globeRect.left + globeRect.width / 2;
+                    let startY = globeRect.top + globeRect.height / 2;
+
+                    if (state.globeInstance && targetPoint) {
+                        const coords = state.globeInstance.getScreenCoords(targetPoint.lat, targetPoint.lng, 0.001);
+                        if (coords) {
+                            startX = coords.x + globeRect.left;
+                            startY = coords.y + globeRect.top;
+                        }
+                    }
+
+                    node.element.style.left = `${startX}px`;
+                    node.element.style.top = `${startY}px`;
+                    node.element.style.opacity = '1';
+                    node.element.style.backgroundColor = CONFIG.lightGreen;
+                });
+
+                // Fade in globe container (now showing DOM nodes)
+                animate(globeContainer, {
+                    opacity: [0, 1],
+                    duration: 300,
+                    ease: 'outQuad',
+                    onComplete: () => {
+                        // Now animate nodes back to logo
+                        sortedNodes.forEach((node, i) => {
+                            const isLast = i === sortedNodes.length - 1;
+                            animate(node.element, {
+                                left: `${node.logoX}px`,
+                                top: `${node.logoY}px`,
+                                backgroundColor: node.color,
+                                duration: 200,
+                                delay: i * 1,
+                                ease: 'outQuad',
+                                onComplete: isLast ? () => {
+                                    globeContainer.style.opacity = '0';
+                                } : undefined
+                            });
+                        });
+                    }
+                });
+            }, 500);
         }
     });
 
