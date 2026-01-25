@@ -49,8 +49,8 @@ function initGlobe() {
       .backgroundColor('rgba(0,0,0,0)')
       .showGlobe(false)
       .showAtmosphere(false)
-      .width(700)
-      .height(700);
+      .width(900)
+      .height(900);
 
     globe.controls().autoRotate = true;
     globe.controls().autoRotateSpeed = 1.5;
@@ -58,7 +58,6 @@ function initGlobe() {
     globe.controls().enablePan = false;
     globe.controls().enableRotate = false;
 
-    // Load pre-computed land points
     fetch('/landPoints.json')
       .then(res => res.json())
       .then(landPoints => {
@@ -68,7 +67,7 @@ function initGlobe() {
           .pointLng('lng')
           .pointColor(() => '#95BF47')
           .pointAltitude(0.001)
-          .pointRadius(0.4);
+          .pointRadius(0.25);
       });
   }, 100);
 }
