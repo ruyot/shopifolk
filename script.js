@@ -539,22 +539,39 @@ function setupScrollAnimation() {
           onComplete: isLast ? () => {
             // After all nodes arrive, handoff to globe.gl
             setTimeout(() => {
-              // Show globe.gl points
-              globeInstance.pointsData(globePoints);
+              const globeContainer = document.getElementById('globe-container');
 
-              // Fade out DOM nodes
+              // Fade out everything (DOM nodes + container)
               nodes.forEach(n => {
                 animate(n.element, {
                   opacity: [1, 0],
-                  duration: 300,
+                  duration: 200,
                   ease: 'outQuad'
                 });
               });
 
-              // Start rotation
+              animate(globeContainer, {
+                opacity: [1, 0],
+                duration: 200,
+                ease: 'outQuad'
+              });
+
+              // Hold for 500ms, then fade back in with globe.gl
               setTimeout(() => {
-                globeInstance.controls().autoRotate = true;
-              }, 300);
+                // Show globe.gl points
+                globeInstance.pointsData(globePoints);
+
+                // Fade in
+                animate(globeContainer, {
+                  opacity: [0, 1],
+                  duration: 300,
+                  ease: 'outQuad',
+                  onComplete: () => {
+                    // Start rotation
+                    globeInstance.controls().autoRotate = true;
+                  }
+                });
+              }, 500);
             }, 100);
           } : undefined
         });
