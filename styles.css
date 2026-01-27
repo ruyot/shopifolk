@@ -182,3 +182,19 @@ body {
     opacity: 0;
     pointer-events: none;
 }
+
+.title-shopifolk {
+    position: fixed;
+    top: 40px;
+    left: 40px;
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    font-size: 48px;
+    letter-spacing: 8px;
+    color: transparent;
+    background: radial-gradient(circle, var(--green-classic) 40%, transparent 40%);
+    background-size: 6px 6px;
+    -webkit-background-clip: text;
+    background-clip: text;
+    opacity: 0;
+    z-index: 100;
+}

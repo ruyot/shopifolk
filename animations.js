@@ -299,6 +299,17 @@ export function setupScrollAnimation() {
                                     ease: 'outQuad',
                                     onComplete: () => {
                                         state.globeInstance.controls().autoRotate = true;
+
+                                        // Fade in title
+                                        const title = document.querySelector('.title-shopifolk');
+                                        if (title) {
+                                            animate(title, {
+                                                opacity: [0, 1],
+                                                translateY: [-20, 0],
+                                                duration: 500,
+                                                ease: 'outExpo'
+                                            });
+                                        }
                                     }
                                 });
                             }, 500);
@@ -312,6 +323,17 @@ export function setupScrollAnimation() {
             hasNodesExited = false;
 
             const globeContainer = document.getElementById('globe-container');
+
+            // Fade out title first
+            const title = document.querySelector('.title-shopifolk');
+            if (title) {
+                animate(title, {
+                    opacity: [1, 0],
+                    translateY: [0, -20],
+                    duration: 300,
+                    ease: 'inExpo'
+                });
+            }
 
             // Stop rotation
             if (state.globeInstance) {
