@@ -300,8 +300,7 @@ export function setupScrollAnimation() {
                                     onComplete: () => {
                                         state.globeInstance.controls().autoRotate = true;
 
-                                        // Fade in title
-                                        const title = document.querySelector('.title-shopifolk');
+                                        const title = document.querySelector('.title-section');
                                         if (title) {
                                             animate(title, {
                                                 opacity: [0, 1],
@@ -324,8 +323,7 @@ export function setupScrollAnimation() {
 
             const globeContainer = document.getElementById('globe-container');
 
-            // Fade out title first
-            const title = document.querySelector('.title-shopifolk');
+            const title = document.querySelector('.title-section');
             if (title) {
                 animate(title, {
                     opacity: [1, 0],
@@ -335,21 +333,17 @@ export function setupScrollAnimation() {
                 });
             }
 
-            // Stop rotation
             if (state.globeInstance) {
                 state.globeInstance.controls().autoRotate = false;
             }
 
-            // Fade out globe.gl version
             animate(globeContainer, {
                 opacity: [1, 0],
                 duration: 200,
                 ease: 'outQuad'
             });
 
-            // Wait 500ms (same as forward), then fade in with node version
             setTimeout(() => {
-                // Hide globe.gl points
                 state.globeInstance.pointsData([]);
 
                 const sortedNodes = [...state.nodes].sort((a, b) => {
@@ -381,13 +375,11 @@ export function setupScrollAnimation() {
                     node.element.style.backgroundColor = CONFIG.lightGreen;
                 });
 
-                // Fade in globe container (now showing DOM nodes)
                 animate(globeContainer, {
                     opacity: [0, 1],
                     duration: 300,
                     ease: 'outQuad',
                     onComplete: () => {
-                        // Now animate nodes back to logo
                         sortedNodes.forEach((node, i) => {
                             const isLast = i === sortedNodes.length - 1;
                             animate(node.element, {
