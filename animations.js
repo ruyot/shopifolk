@@ -1,4 +1,4 @@
-import { animate, stagger, splitText } from 'animejs';
+import { animate, stagger, splitText, svg } from 'animejs';
 import { CONFIG, state } from './config.js';
 
 export function animateTextIn() {
@@ -300,13 +300,34 @@ export function setupScrollAnimation() {
                                     onComplete: () => {
                                         state.globeInstance.controls().autoRotate = true;
 
-                                        const title = document.querySelector('.title-section');
-                                        if (title) {
-                                            animate(title, {
-                                                opacity: [0, 1],
-                                                translateY: [-20, 0],
-                                                duration: 500,
-                                                ease: 'outExpo'
+                                        // Show title section
+                                        const titleSection = document.querySelector('.title-section');
+                                        if (titleSection) {
+                                            titleSection.style.opacity = '1';
+                                        }
+
+                                        // Draw in the title text using createDrawable
+                                        const titleText = document.querySelector('.title-text');
+                                        if (titleText) {
+                                            const [drawable] = svg.createDrawable(titleText);
+                                            drawable.draw = '0 0';
+
+                                            animate(drawable, {
+                                                draw: ['0 0', '0 1'],
+                                                duration: 3000,
+                                                ease: 'inOutQuad',
+                                                onComplete: () => {
+                                                    // Fade in underline and members after draw completes
+                                                    const fadeElements = document.querySelector('.title-fade-elements');
+                                                    if (fadeElements) {
+                                                        animate(fadeElements, {
+                                                            opacity: [0, 1],
+                                                            translateY: [10, 0],
+                                                            duration: 500,
+                                                            ease: 'outExpo'
+                                                        });
+                                                    }
+                                                }
                                             });
                                         }
                                     }
@@ -324,11 +345,21 @@ export function setupScrollAnimation() {
             const globeContainer = document.getElementById('globe-container');
 
             const title = document.querySelector('.title-section');
+            const fadeElements = document.querySelector('.title-fade-elements');
+
+            if (fadeElements) {
+                animate(fadeElements, {
+                    opacity: [1, 0],
+                    duration: 200,
+                    ease: 'inExpo'
+                });
+            }
+
             if (title) {
                 animate(title, {
                     opacity: [1, 0],
-                    translateY: [0, -20],
                     duration: 300,
+                    delay: 100,
                     ease: 'inExpo'
                 });
             }
