@@ -181,7 +181,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        const exitThreshold3 = 900;
+        const exitThreshold3 = 950;
 
         if (hasExited2 && scrollY >= exitThreshold3 && !hasExited3) {
             hasExited3 = true;
