@@ -238,6 +238,9 @@ export function setupScrollAnimation() {
         if (hasExited3 && scrollY >= nodesExitThreshold && !hasNodesExited) {
             hasNodesExited = true;
 
+            document.body.style.overflow = 'hidden';
+            window.scrollTo(0, scrollY);
+
             const sortedNodes = [...state.nodes].sort((a, b) => {
                 if (b.logoY !== a.logoY) return b.logoY - a.logoY;
                 return a.logoX - b.logoX;
