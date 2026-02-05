@@ -1,4 +1,3 @@
-// Globe initialization and management
 import Globe from 'globe.gl';
 import { state } from './config.js';
 

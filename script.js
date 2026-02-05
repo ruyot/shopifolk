@@ -1,4 +1,3 @@
-// Main entry point - orchestrates all modules
 import { initGlobe } from './globe.js';
 import { sampleLogoForNodes, createNodeElements, startHoverAnimation, setupMouseRepel } from './nodes.js';
 import { animateTextIn, setupScrollAnimation } from './animations.js';

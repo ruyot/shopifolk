@@ -1,5 +1,3 @@
-// Configuration and shared state for the Shopifolk animation
-
 export const CONFIG = {
     nodeSize: 3.5,
     samplingGap: 5,
@@ -21,7 +19,6 @@ export const CONFIG = {
     terminalCharDelay: 30,
 };
 
-// Shared state
 export const state = {
     nodes: [],
     logoPositions: [],

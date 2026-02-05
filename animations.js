@@ -303,13 +303,11 @@ export function setupScrollAnimation() {
                                     onComplete: () => {
                                         state.globeInstance.controls().autoRotate = true;
 
-                                        // Show title section
                                         const titleSection = document.querySelector('.title-section');
                                         if (titleSection) {
                                             titleSection.style.opacity = '1';
                                         }
 
-                                        // Draw in the title text using createDrawable
                                         const titleText = document.querySelector('.title-text');
                                         if (titleText) {
                                             const [drawable] = svg.createDrawable(titleText);
@@ -320,7 +318,6 @@ export function setupScrollAnimation() {
                                                 duration: 3000,
                                                 ease: 'inOutQuad',
                                                 onComplete: () => {
-                                                    // Fade in underline and members after draw completes
                                                     const fadeElements = document.querySelector('.title-fade-elements');
                                                     if (fadeElements) {
                                                         animate(fadeElements, {

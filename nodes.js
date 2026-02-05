@@ -1,4 +1,3 @@
-// Node creation, hover, and mouse repel functionality
 import { animate } from 'animejs';
 import { CONFIG, state } from './config.js';
 
