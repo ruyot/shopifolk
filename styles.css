@@ -253,7 +253,6 @@ body {
     transform: scale(0.95);
 }
 
-/* Moon icon - crescent shape facing right */
 .moon-icon {
     width: 28px;
     height: 28px;
@@ -262,7 +261,6 @@ body {
     box-shadow: 8px 0 0 0 var(--text-primary);
 }
 
-/* Sun icon - simple circle */
 .sun-icon {
     width: 28px;
     height: 28px;
@@ -274,7 +272,7 @@ body {
 /* Dark Mode Styles */
 body.dark-mode {
     --bg-cream: #000000;
-    --text-primary: #FFFFFF;
+    --text-primary: #F5F0EB;
 }
 
 body.dark-mode .moon-icon {
@@ -287,5 +285,9 @@ body.dark-mode .sun-icon {
 
 body.dark-mode .terminal-box {
     background-color: #000000;
-    border-color: #FFFFFF;
+    border-color: #F5F0EB;
+}
+
+body.dark-mode .word {
+    color: #F5F0EB;
 }
