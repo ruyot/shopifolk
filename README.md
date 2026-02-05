@@ -1,24 +1,43 @@
 # Shopifolk
 
-A web ring for everyone Shopify - interns, full-time employees, and alumni.
+A webring for everyone Shopify - interns, full-time employees, and alumni.
 
-## Purpose
+## What is a Webring?
 
-Shopifolk serves as a community directory connecting current and former Shopify engineering talent. The site provides a simple way to discover and browse engineers who have been part of the Shopify engineering organization.
+A webring is a collection of websites linked together in a circular structure. Each site has navigation links to the previous and next sites, allowing visitors to explore the entire ring. (Like a visual representation of everyone)
+
+## Joining the Webring
+
+1. **Add the widget** to your personal website (template below) - usually in the footer
+2. **Fork this repo** and add your info to the bottom of `webringData` in `webring.js`:
+   ```js
+   { name: "Your Name", website: "https://your-site.com" }
+   ```
+3. **Submit a Pull Request** - will be reviewed and merged
+
+## Widget Template
+
+Add this to your site's footer:
+
+```html
+<div style="display: flex; align-items: center; gap: 8px;">
+  <a href="https://shopifolk.com/#your-site-url?nav=prev">←</a>
+  <a href="https://shopifolk.com" target="_blank">
+    <img src="https://shopifolk.com/shopify_logo.svg" alt="Shopifolk" style="width: 24px; height: auto; opacity: 0.8;"/>
+  </a>
+  <a href="https://shopifolk.com/#your-site-url?nav=next">→</a>
+</div>
+<!-- Replace 'your-site-url' with your actual site URL -->
+```
+
+Feel free to style the widget to match your site's theme!
 
 ## Features
 
-- Browse engineers by name and role
-- Filter by semester/cohort (e.g., Fall 2025, Winter 2025, Summer 2025)
-- Links to individual profiles or personal sites
-
-## Semesters
-
-The filtering system uses the following notation:
-- **F** - Fall (e.g., F25 = Fall 2025)
-- **W** - Winter (e.g., W25 = Winter 2025)
-- **S** - Summer (e.g., S25 = Summer 2025)
+- Browse Shopify engineers by name
+- Filter by semester/cohort (F = Fall, W = Winter, S = Summer)
+- Links to individual profiles and personal sites
 
 ## Contributing
 
-If you are a current or former Shopify engineer and would like to be added to the directory, please submit a pull request or reach out to the maintainers.
+Submit a PR to join, any design or development suggestions are welcome 

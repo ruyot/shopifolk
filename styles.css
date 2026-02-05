@@ -230,64 +230,46 @@ body {
     padding: 6px 0;
 }
 
-/* Theme Toggle Button */
-.theme-toggle {
+/* Webring Widget */
+.webring-widget {
     position: fixed;
     bottom: 20px;
-    right: 20px;
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
     z-index: 1000;
-    padding: 0;
-    transition: transform 0.2s ease;
 }
 
-.theme-toggle:hover {
+.webring-arrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    color: var(--text-primary);
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.webring-arrow:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.webring-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.7;
+}
+
+.webring-logo:hover {
+    opacity: 1;
     transform: scale(1.1);
 }
 
-.theme-toggle:active {
-    transform: scale(0.95);
-}
-
-.moon-icon {
+.webring-logo img {
     width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: transparent;
-    box-shadow: 8px 0 0 0 var(--text-primary);
-}
-
-.sun-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: var(--text-primary);
-    display: none;
-}
-
-/* Dark Mode Styles */
-body.dark-mode {
-    --bg-cream: #000000;
-    --text-primary: #F5F0EB;
-}
-
-body.dark-mode .moon-icon {
-    display: none;
-}
-
-body.dark-mode .sun-icon {
-    display: block;
-}
-
-body.dark-mode .terminal-box {
-    background-color: #000000;
-    border-color: #F5F0EB;
-}
-
-body.dark-mode .word {
-    color: #F5F0EB;
+    height: auto;
 }

@@ -40,7 +40,7 @@ export async function sampleLogoForNodes() {
             resolve(positions);
         };
 
-        img.src = 'shopify_glyph.svg';
+        img.src = 'shopify_logo.svg';
     });
 }
 
