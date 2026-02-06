@@ -1,7 +1,5 @@
 // Member Data
 export const webringData = [
-
-
     // Example entry
     // { name: "Your Name", website: "https://your-site.com" },
 ];
