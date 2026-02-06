@@ -24,8 +24,6 @@ export function animateTextIn() {
 export function setupScrollAnimation() {
     window.scrollTo(0, 0);
 
-    const baselineVh = window.innerHeight;
-
     let isVisible = false;
     let clickTriggered = false;
     const terminalBox = document.querySelector('.terminal-box');
@@ -43,24 +41,21 @@ export function setupScrollAnimation() {
     let hasExited2 = false;
     let hasExited3 = false;
     let hasNodesExited = false;
-    let canExit = false;
-    let exitTimeout;
 
     window.addEventListener('scroll', () => {
         if (hasNodesExited) return;
 
         const scrollY = window.scrollY;
 
-        // Use baseline viewport height for consistent thresholds regardless of zoom
-        const vh = baselineVh;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollProgress = maxScroll > 0 ? scrollY / maxScroll : 0;
+        const showThreshold = 0.02;
+        const startScroll = 0.03;
+        const endScroll = 0.08;
+        const clickThreshold = 0.10;
+        const exitThreshold = 0.30;
 
-        const startScroll = vh * 0.05;
-        const endScroll = vh * 0.12;
-        const clickThreshold = vh * 0.13;
-        const exitThreshold = vh * 0.5;
-        const showThreshold = vh * 0.03;
-
-        if (scrollY > showThreshold && !isVisible && !hasExited) {
+        if (scrollProgress > showThreshold && !isVisible && !hasExited) {
             isVisible = true;
             terminalBox.classList.add('visible');
             animate(terminalBox, {
@@ -71,15 +66,13 @@ export function setupScrollAnimation() {
             });
         }
 
-        if (scrollY <= showThreshold && isVisible) {
+        if (scrollProgress <= showThreshold && isVisible) {
             isVisible = false;
             clickTriggered = false;
             hasExited = false;
             hasExited2 = false;
             hasExited3 = false;
             hasNodesExited = false;
-            canExit = false;
-            if (exitTimeout) clearTimeout(exitTimeout);
 
             state.nodes.forEach(node => {
                 node.element.style.left = `${node.logoX}px`;
@@ -127,8 +120,8 @@ export function setupScrollAnimation() {
             }
         }
 
-        if (!hasExited && scrollY >= startScroll && scrollY <= endScroll) {
-            const progress = (scrollY - startScroll) / (endScroll - startScroll);
+        if (!hasExited && scrollProgress >= startScroll && scrollProgress <= endScroll) {
+            const progress = (scrollProgress - startScroll) / (endScroll - startScroll);
             const charsToShow = Math.floor(progress * chars.length);
 
             chars.forEach((char, index) => {
@@ -136,13 +129,13 @@ export function setupScrollAnimation() {
             });
         }
 
-        if (!hasExited && scrollY > endScroll) {
+        if (!hasExited && scrollProgress > endScroll) {
             chars.forEach(char => {
                 char.style.opacity = '1';
             });
         }
 
-        if (!hasExited && scrollY >= clickThreshold && !clickTriggered) {
+        if (!hasExited && scrollProgress >= clickThreshold && !clickTriggered) {
             clickTriggered = true;
             const corners = document.querySelectorAll('.corner');
             animate(terminalBox, {
@@ -154,23 +147,15 @@ export function setupScrollAnimation() {
             setTimeout(() => {
                 corners.forEach(corner => corner.classList.remove('visible'));
             }, 500);
-
-            if (exitTimeout) clearTimeout(exitTimeout);
-            exitTimeout = setTimeout(() => {
-                canExit = true;
-                if (window.scrollY >= exitThreshold && !hasExited) {
-                    triggerExitAnimation();
-                }
-            }, 500);
         }
 
-        if (clickTriggered && canExit && scrollY >= exitThreshold && !hasExited) {
+        if (scrollProgress >= exitThreshold && !hasExited) {
             triggerExitAnimation();
         }
 
-        const exitThreshold2 = vh * 0.6;
+        const exitThreshold2 = 0.45;
 
-        if (hasExited && scrollY >= exitThreshold2 && !hasExited2) {
+        if (hasExited && scrollProgress >= exitThreshold2 && !hasExited2) {
             hasExited2 = true;
             const wordWho = document.querySelector('.word-who');
             const wordGet = document.querySelector('.word-get');
@@ -183,7 +168,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        if (hasExited2 && scrollY < exitThreshold2 - vh * 0.08) {
+        if (hasExited2 && scrollProgress < exitThreshold2 - 0.05) {
             hasExited2 = false;
             const wordWho = document.querySelector('.word-who');
             const wordGet = document.querySelector('.word-get');
@@ -196,9 +181,9 @@ export function setupScrollAnimation() {
             });
         }
 
-        const exitThreshold3 = vh * 0.75;
+        const exitThreshold3 = 0.60;
 
-        if (hasExited2 && scrollY >= exitThreshold3 && !hasExited3) {
+        if (hasExited2 && scrollProgress >= exitThreshold3 && !hasExited3) {
             hasExited3 = true;
             state.mouseRepelDisabled = true;
             const wordThe = document.querySelector('.word-the');
@@ -212,7 +197,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        if (hasExited3 && scrollY < exitThreshold3 - vh * 0.08) {
+        if (hasExited3 && scrollProgress < exitThreshold3 - 0.05) {
             hasExited3 = false;
             state.mouseRepelDisabled = false;
             const wordThe = document.querySelector('.word-the');
@@ -226,7 +211,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        if (hasExited && scrollY < exitThreshold - vh * 0.08) {
+        if (hasExited && scrollProgress < exitThreshold - 0.05) {
             hasExited = false;
 
             const wordShit = document.querySelector('.word-shit');
@@ -248,9 +233,9 @@ export function setupScrollAnimation() {
             });
         }
 
-        const nodesExitThreshold = vh * 0.15;  // 15% of vh (was 200px)
+        const nodesExitThreshold = 0.70;
 
-        if (hasExited3 && scrollY >= nodesExitThreshold && !hasNodesExited) {
+        if (hasExited3 && scrollProgress >= nodesExitThreshold && !hasNodesExited) {
             hasNodesExited = true;
 
             document.body.style.overflow = 'hidden';
