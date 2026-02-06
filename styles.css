@@ -60,37 +60,37 @@ body {
 .word-the {
     top: 5%;
     left: 0.5%;
-    font-size: 28vw;
+    font-size: clamp(100px, 28vw, 450px);
 }
 
 .word-ppl {
     top: 5%;
     right: 0.5%;
-    font-size: 28vw;
+    font-size: clamp(100px, 28vw, 450px);
 }
 
 .word-who {
     top: 48%;
     left: calc(0.5% + 8vw);
-    font-size: 18vw;
+    font-size: clamp(80px, 18vw, 300px);
 }
 
 .word-get {
     top: 48%;
     right: calc(0.5% + 11vw);
-    font-size: 18vw;
+    font-size: clamp(80px, 18vw, 300px);
 }
 
 .word-shit {
     bottom: 4%;
     left: calc(50% - 34vw);
-    font-size: 12vw;
+    font-size: clamp(60px, 12vw, 200px);
 }
 
 .word-done {
     bottom: 4%;
     left: calc(50% + 18vw);
-    font-size: 12vw;
+    font-size: clamp(60px, 12vw, 200px);
 }
 
 .terminal-box {

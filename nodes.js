@@ -47,6 +47,8 @@ export async function sampleLogoForNodes() {
 export function createNodeElements(positions) {
     const container = document.querySelector('.container');
 
+    state.logoPositions = positions;
+
     const minX = Math.min(...positions.map(p => p.x));
     const maxX = Math.max(...positions.map(p => p.x));
     const minY = Math.min(...positions.map(p => p.y));
@@ -54,6 +56,8 @@ export function createNodeElements(positions) {
 
     const logoWidth = maxX - minX;
     const logoHeight = maxY - minY;
+
+    state.logoDimensions = { minX, minY, logoWidth, logoHeight };
 
     const viewW = window.innerWidth;
     const viewH = window.innerHeight;
@@ -74,6 +78,8 @@ export function createNodeElements(positions) {
         container.appendChild(node);
         state.nodes.push({
             element: node,
+            rawX: pos.x,
+            rawY: pos.y,
             logoX: pos.x + offsetX,
             logoY: pos.y + offsetY,
             currentX: pos.x + offsetX,
@@ -81,6 +87,32 @@ export function createNodeElements(positions) {
             color: pos.color,
             isRepelled: false
         });
+    });
+
+    window.addEventListener('resize', handleResize);
+}
+
+function handleResize() {
+    if (!state.logoDimensions || state.nodes.length === 0) return;
+
+    const { minX, minY, logoWidth, logoHeight } = state.logoDimensions;
+    const viewW = window.innerWidth;
+    const viewH = window.innerHeight;
+
+    const offsetX = (viewW - logoWidth) / 2 - minX + CONFIG.centerAdjustX;
+    const offsetY = (viewH - logoHeight) / 2 - minY + CONFIG.centerAdjustY;
+
+    state.nodes.forEach((nodeData) => {
+        const newX = nodeData.rawX + offsetX;
+        const newY = nodeData.rawY + offsetY;
+
+        nodeData.logoX = newX;
+        nodeData.logoY = newY;
+        nodeData.currentX = newX;
+        nodeData.currentY = newY;
+
+        nodeData.element.style.left = `${newX}px`;
+        nodeData.element.style.top = `${newY}px`;
     });
 }
 

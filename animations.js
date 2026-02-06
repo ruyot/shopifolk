@@ -39,13 +39,18 @@ export function setupScrollAnimation() {
     let exitTimeout;
 
     window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY;
-        const startScroll = 60;
-        const endScroll = 150;
-        const clickThreshold = 160;
-        const exitThreshold = 600;
+        if (hasNodesExited) return;
 
-        if (scrollY > 40 && !isVisible && !hasExited) {
+        const scrollY = window.scrollY;
+        const vh = window.innerHeight;
+
+        const startScroll = vh * 0.05;
+        const endScroll = vh * 0.12;
+        const clickThreshold = vh * 0.13;
+        const exitThreshold = vh * 0.5;
+        const showThreshold = vh * 0.03;
+
+        if (scrollY > showThreshold && !isVisible && !hasExited) {
             isVisible = true;
             terminalBox.classList.add('visible');
             animate(terminalBox, {
@@ -56,7 +61,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        if (scrollY <= 40 && isVisible) {
+        if (scrollY <= showThreshold && isVisible) {
             isVisible = false;
             clickTriggered = false;
             hasExited = false;
@@ -153,7 +158,7 @@ export function setupScrollAnimation() {
             triggerExitAnimation();
         }
 
-        const exitThreshold2 = 750;
+        const exitThreshold2 = vh * 0.6;
 
         if (hasExited && scrollY >= exitThreshold2 && !hasExited2) {
             hasExited2 = true;
@@ -168,7 +173,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        if (hasExited2 && scrollY < exitThreshold2 - 100) {
+        if (hasExited2 && scrollY < exitThreshold2 - vh * 0.08) {
             hasExited2 = false;
             const wordWho = document.querySelector('.word-who');
             const wordGet = document.querySelector('.word-get');
@@ -181,7 +186,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        const exitThreshold3 = 950;
+        const exitThreshold3 = vh * 0.75;
 
         if (hasExited2 && scrollY >= exitThreshold3 && !hasExited3) {
             hasExited3 = true;
@@ -197,7 +202,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        if (hasExited3 && scrollY < exitThreshold3 - 100) {
+        if (hasExited3 && scrollY < exitThreshold3 - vh * 0.08) {
             hasExited3 = false;
             state.mouseRepelDisabled = false;
             const wordThe = document.querySelector('.word-the');
@@ -211,7 +216,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        if (hasExited && scrollY < exitThreshold - 100) {
+        if (hasExited && scrollY < exitThreshold - vh * 0.08) {
             hasExited = false;
 
             const wordShit = document.querySelector('.word-shit');
@@ -233,7 +238,7 @@ export function setupScrollAnimation() {
             });
         }
 
-        const nodesExitThreshold = 200;
+        const nodesExitThreshold = vh * 0.15;  // 15% of vh (was 200px)
 
         if (hasExited3 && scrollY >= nodesExitThreshold && !hasNodesExited) {
             hasNodesExited = true;
