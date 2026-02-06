@@ -1,6 +1,12 @@
 import { animate, stagger, splitText, svg } from 'animejs';
 import { CONFIG, state } from './config.js';
 
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+
+window.scrollTo(0, 0);
+
 export function animateTextIn() {
     const words = Array.from(document.querySelectorAll('.word'));
     words.sort((a, b) => parseInt(a.dataset.order) - parseInt(b.dataset.order));
@@ -17,6 +23,8 @@ export function animateTextIn() {
 
 export function setupScrollAnimation() {
     window.scrollTo(0, 0);
+
+    const baselineVh = window.innerHeight;
 
     let isVisible = false;
     let clickTriggered = false;
@@ -42,7 +50,9 @@ export function setupScrollAnimation() {
         if (hasNodesExited) return;
 
         const scrollY = window.scrollY;
-        const vh = window.innerHeight;
+
+        // Use baseline viewport height for consistent thresholds regardless of zoom
+        const vh = baselineVh;
 
         const startScroll = vh * 0.05;
         const endScroll = vh * 0.12;
