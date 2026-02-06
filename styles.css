@@ -215,12 +215,26 @@ body {
     height: 1px;
     background-color: var(--text-primary);
     margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+.member-headers {
+    display: flex;
+    gap: 60px;
+    margin-bottom: 15px;
+}
+
+.member-header {
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--green-classic);
 }
 
 .member-list {
     list-style: none;
     padding: 0;
-    margin-top: 20px;
+    margin-top: 0;
 }
 
 .member-item {
@@ -230,7 +244,6 @@ body {
     padding: 6px 0;
 }
 
-/* Webring Widget */
 .webring-widget {
     position: fixed;
     bottom: 20px;
